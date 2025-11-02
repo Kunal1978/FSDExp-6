@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useUI } from './contexts/UIContext'
 import { ContactForm } from './components/ContactForm'
 import { Auth } from './components/Auth'
+import APITester from './components/APITester'
 import { fetchPortfolio } from './store/slices/portfolioSlice'
 import { initializeAuth, getCurrentUser, logout } from './store/slices/authSlice'
 
@@ -11,6 +12,7 @@ function App() {
   const { activeSection, showContactForm, scrollToSection, toggleContactForm } = useUI()
   const { profile, skills, projects, socialLinks, loading, error } = useSelector(state => state.portfolio)
   const { isAuthenticated, user } = useSelector(state => state.auth)
+  const [showAPITester, setShowAPITester] = useState(false)
 
   useEffect(() => {
     // Initialize auth from localStorage
@@ -60,6 +62,57 @@ function App() {
     dispatch(logout())
   }
 
+  // Show API Tester if toggled
+  if (showAPITester) {
+    return (
+      <div>
+        {/* Navigation */}
+        <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-sm z-50 shadow-sm">
+          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-900">{profile.name || 'API-Boilerplate'}</h1>
+            <div className="flex items-center space-x-8">
+              <button 
+                onClick={() => setShowAPITester(false)}
+                className="text-gray-700 hover:text-blue-600 transition"
+              >
+                Home
+              </button>
+              <button 
+                onClick={() => setShowAPITester(false)}
+                className="text-gray-700 hover:text-blue-600 transition"
+              >
+                About
+              </button>
+              <button 
+                onClick={() => setShowAPITester(false)}
+                className="text-gray-700 hover:text-blue-600 transition"
+              >
+                Services
+              </button>
+              <button 
+                onClick={() => setShowAPITester(false)}
+                className="text-blue-600 font-semibold"
+              >
+                Test Your API
+              </button>
+              {isAuthenticated && user && (
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                >
+                  Logout
+                </button>
+              )}
+            </div>
+          </div>
+        </nav>
+        <div className="pt-16">
+          <APITester />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -72,6 +125,7 @@ function App() {
             <button onClick={() => scrollToSection('skills')} className={`hover:text-blue-600 transition ${activeSection === 'skills' ? 'text-blue-600' : 'text-gray-700'}`}>Skills</button>
             <button onClick={() => scrollToSection('projects')} className={`hover:text-blue-600 transition ${activeSection === 'projects' ? 'text-blue-600' : 'text-gray-700'}`}>Projects</button>
             <button onClick={() => scrollToSection('contact')} className={`hover:text-blue-600 transition ${activeSection === 'contact' ? 'text-blue-600' : 'text-gray-700'}`}>Contact</button>
+            <button onClick={() => setShowAPITester(true)} className={`hover:text-blue-600 transition ${showAPITester ? 'text-blue-600' : 'text-gray-700'}`}>Test Your API</button>
             {isAuthenticated && user && (
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-600">Welcome, {user.name}</span>
